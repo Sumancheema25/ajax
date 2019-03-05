@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>TableData</title>
+</head>
+<body onload="apiCall()">
+</body>
+<style>
+table {
+        border: 1px solid burlywood;
+    }
+
+    th {
+        border: 1px solid burlywood;
+    }
+
+    td {
+        border: 1px solid burlywood;
+    }
+
+    tr {
+        border: 1px solid burlywood;
+    }
+</style>
+</html>
+<script type="text/javascript">
+    function apiCall() {
+        $(document).ready(function()
+        {
+        const Url="https://jsonplaceholder.typicode.com/posts";
+        $.ajax({
+            url: Url,
+            type:"GET",
+            success: function(result){
+                createTable(result)
+            },
+            error:function(error){
+                console.log(`Error ${error}`)
+            }
+        })
+        })
+    }
+     function createTable(arr) {
+        var table = document.createElement('table');
+        table.setAttribute('id', 'dynamicTable');
+        var header = Object.keys(arr[0]);
+        var tr = document.createElement('tr');
+        let previousTable = document.getElementById('dynamicTable');
+        if (!!previousTable) {
+            previousTable.remove();
+        }
+        for (var i = 0; i < header.length; i++) {
+            var th = document.createElement('th');
+            th.innerHTML = header[i];
+            th.setAttribute('class', 'tableClass1');
+            th.setAttribute('id', header[i])
+            tr.appendChild(th);
+        }
+        table.appendChild(tr);
+        for (var i = 0; i < arr.length; i++) {
+            var tr = document.createElement('tr');
+            for (var j = 0; j < header.length; j++) {
+                var td = document.createElement('td');
+                td.innerHTML = arr[i][header[j]];
+                td.setAttribute('class', 'tableClass');
+                tr.appendChild(td);
+            }
+            table.appendChild(tr);
+        }
+        document.body.appendChild(table);
+        addEventsToColumns(arr);
+    }
+    
+    function addEventsToColumns(arr) {
+        var header = Object.keys(arr[0]);
+        for (var i = 0; i < header.length; i++) {
+            document.getElementById(header[i]).addEventListener('click', function (event) {
+               console.log(event);
+                sortTable(event.target.innerText, arr)
+            })
+        }
+    }
+    
+    let flag = true;
+    function sortTable(param, arr) {
+        arr.sort(compare);
+        function compare(a, b) {
+            if (a[param] > b[param] && flag)
+                return 1;
+            else
+                return -1;
+        }
+        flag = !flag;
+        createTable(arr);
+     }
+    </script>
